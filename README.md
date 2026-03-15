@@ -7,3 +7,4 @@ The site showcases my work in strategy and market intelligence — selected
 projects, approach to research, and how I think about complex problems.
 
 **Live site:** 
+https://nikktheexplorer.github.io/Portfolio/
