@@ -3,7 +3,7 @@ import { ArrowRight, Download, Linkedin } from 'lucide-react';
 export default function Hero() {
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/Nikhil_resume_base.docx';
+    link.href = `${import.meta.env.BASE_URL}Nikhil_resume_base.docx`;
     link.download = 'Nikhil_resume_base.docx';
     document.body.appendChild(link);
     link.click();
@@ -57,7 +57,7 @@ export default function Hero() {
       <div className="relative lg:-mt-8">
         <div className="relative aspect-[4/5] md:aspect-square lg:aspect-[4/5] flex items-end justify-center scale-110 lg:scale-[1.2] origin-bottom">
           <img 
-            src="/Profile.png" 
+            src={`${import.meta.env.BASE_URL}Profile.png`} 
             alt="Nikhil Sharma" 
             className="w-full h-full object-contain object-bottom drop-shadow-2xl"
             referrerPolicy="no-referrer"
