@@ -84,7 +84,7 @@ export default function SelectedWork() {
           className="w-full text-left p-8 flex flex-col h-full"
         >
           <div className="flex justify-between items-start w-full mb-8">
-            <span className={`text-4xl font-bold ${isExpanded ? 'text-white/10' : 'text-slate-200'}`}>
+            <span className={`text-4xl font-bold text-[#00bc7d]`}>
               {work.number}
             </span>
             <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
