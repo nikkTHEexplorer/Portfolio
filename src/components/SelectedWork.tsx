@@ -76,7 +76,7 @@ export default function SelectedWork() {
         className={`rounded-3xl transition-all duration-500 border flex flex-col overflow-hidden ${
           isExpanded 
             ? 'bg-[#0B2721] border-[#0B2721] text-white shadow-xl shadow-emerald-900/20' 
-            : 'bg-slate-50 border-slate-100 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-slate-200/50'
+            : 'bg-[#e8f3f1] border-slate-100 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-slate-200/50'
         }`}
       >
         <button 
