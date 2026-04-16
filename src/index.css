@@ -8,3 +8,12 @@
 html {
   scroll-behavior: smooth;
 }
+
+body {
+  background: #ffffff;
+}
+
+.hero-grid-shell {
+  background: #ffffff;
+  isolation: isolate;
+}

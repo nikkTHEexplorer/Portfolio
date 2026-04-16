@@ -1,6 +1,160 @@
-import { ArrowRight, Download, Linkedin } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Download, Linkedin } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
+
+type AnimatedWordsProps = {
+  text: string;
+  className: string;
+  delay?: number;
+};
+
+type TypewriterProps = {
+  words: string[];
+  speed?: number;
+  delayBetweenWords?: number;
+  startDelay?: number;
+  cursor?: boolean;
+  cursorChar?: string;
+  className?: string;
+};
+
+function AnimatedWords({ text, className, delay = 0 }: AnimatedWordsProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const words = text.split(' ');
+
+  if (shouldReduceMotion) {
+    return <span className={className}>{text} </span>;
+  }
+
+  return (
+    <span className={className} aria-hidden="true">
+      {words.map((word, index) => (
+        <motion.span
+          key={`${word}-${index}`}
+          className="inline-block mr-[0.25em] will-change-transform"
+          initial={{ opacity: 0, y: '0.6em', filter: 'blur(6px)' }}
+          animate={{ opacity: 1, y: '0em', filter: 'blur(0px)' }}
+          transition={{
+            duration: 0.45,
+            ease: [0.16, 1, 0.3, 1],
+            delay: delay + index * 0.08,
+          }}
+        >
+          {word}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+function Typewriter({
+  words,
+  speed = 85,
+  delayBetweenWords = 1400,
+  startDelay = 0,
+  cursor = true,
+  cursorChar = '|',
+  className = '',
+}: TypewriterProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [showCursor, setShowCursor] = useState(true);
+  const [hasStarted, setHasStarted] = useState(startDelay === 0);
+
+  const currentWord = words[wordIndex] ?? '';
+
+  useEffect(() => {
+    if (shouldReduceMotion || startDelay === 0) {
+      setHasStarted(true);
+      return;
+    }
+
+    const startTimeout = window.setTimeout(() => {
+      setHasStarted(true);
+    }, startDelay);
+
+    return () => window.clearTimeout(startTimeout);
+  }, [shouldReduceMotion, startDelay]);
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setDisplayText(words[0] ?? '');
+      return;
+    }
+
+    if (!hasStarted) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      if (!isDeleting) {
+        if (charIndex < currentWord.length) {
+          setDisplayText(currentWord.substring(0, charIndex + 1));
+          setCharIndex(charIndex + 1);
+        } else {
+          window.setTimeout(() => {
+            setIsDeleting(true);
+          }, delayBetweenWords);
+        }
+      } else if (charIndex > 0) {
+        setDisplayText(currentWord.substring(0, charIndex - 1));
+        setCharIndex(charIndex - 1);
+      } else {
+        setIsDeleting(false);
+        setWordIndex((previous) => (previous + 1) % words.length);
+      }
+    }, isDeleting ? speed / 2 : speed);
+
+    return () => window.clearTimeout(timeout);
+  }, [charIndex, currentWord, delayBetweenWords, hasStarted, isDeleting, shouldReduceMotion, speed, words, wordIndex]);
+
+  useEffect(() => {
+    if (!cursor || shouldReduceMotion) {
+      return;
+    }
+
+    const cursorInterval = window.setInterval(() => {
+      setShowCursor((previous) => !previous);
+    }, 500);
+
+    return () => window.clearInterval(cursorInterval);
+  }, [cursor, shouldReduceMotion]);
+
+  return (
+    <span className={className}>
+      {displayText}
+      {cursor && (
+        <span className="ml-1 inline-block transition-opacity duration-75" style={{ opacity: showCursor ? 1 : 0 }}>
+          {cursorChar}
+        </span>
+      )}
+    </span>
+  );
+}
 
 export default function Hero() {
+  const firstLine =
+    '8 years turning complex market questions into decisions for leadership teams across';
+  const secondLine = 'ICT, industrial, and emerging tech.';
+  const rotatingExpertise = [
+    'Strategy Consulting',
+    'Account Management',
+    'Team Handling',
+    'Market Intelligence',
+    'Competitive Research',
+  ];
+  const headline =
+    `${firstLine} ${secondLine}`;
+  const wordStagger = 0.08;
+  const wordDuration = 0.45;
+  const secondLineDelay =
+    (firstLine.split(' ').length - 1) * wordStagger + wordDuration;
+  const subtitleStartDelay =
+    (secondLine.split(' ').length - 1) * wordStagger + wordDuration + secondLineDelay;
+
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = `${import.meta.env.BASE_URL}Nikhil_resume_base.docx`;
@@ -13,13 +167,24 @@ export default function Hero() {
   return (
     <section className="container mx-auto px-6 pt-16 lg:pt-20 pb-24 grid lg:grid-cols-2 gap-12 items-center lg:items-start">
       <div className="space-y-8 relative z-10">
-        <h1 className="font-bold leading-[1.2] tracking-tight">
-          <span className="text-5xl md:text-6xl lg:text-7xl text-slate-900">8 years</span>
-          <span className="text-3xl md:text-4xl lg:text-5xl text-slate-600 font-medium"> turning complex market questions into decisions — for leadership teams across </span>
-          <span className="text-5xl md:text-6xl lg:text-7xl text-emerald-600">ICT, industrial, and emerging tech.</span>
+        <h1 className="font-bold leading-[1.2] tracking-tight" aria-label={headline}>
+          <AnimatedWords
+            text={firstLine}
+            className="text-4xl md:text-5xl lg:text-6xl text-slate-900"
+          />
+          <br />
+          <AnimatedWords
+            text={secondLine}
+            className="mt-3 inline-block text-5xl md:text-6xl lg:text-7xl text-emerald-600"
+            delay={secondLineDelay}
+          />
         </h1>
-        <p className="text-lg text-slate-600 max-w-xl leading-relaxed">
-          Strategy Consulting, Account management, Team handling, Market Intelligence, Competitive Research
+        <p className="text-lg md:text-xl text-slate-600 max-w-xl leading-relaxed min-h-8">
+          <Typewriter
+            words={rotatingExpertise}
+            startDelay={subtitleStartDelay * 1000}
+            className="font-medium text-slate-700"
+          />
         </p>
         
         <div className="flex flex-wrap items-center gap-4">
